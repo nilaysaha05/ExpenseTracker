@@ -11,7 +11,7 @@ class AddTransaction extends StatefulWidget {
 
 class _AddTransactionState extends State<AddTransaction> {
   double? amount;
-  String note = "Some Expense";
+  String note = "untitled";
   String type = "Income";
   DateTime selectedDate = DateTime.now();
 

@@ -1,7 +1,12 @@
+import 'dart:ffi';
+
 import 'package:budget_tracker_app/controller/db_helper.dart';
 import 'package:budget_tracker_app/pages/add_transaction.dart';
+import 'package:budget_tracker_app/pages/transaction_data_page.dart';
 import 'package:budget_tracker_app/theme/colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:budget_tracker_app/widgets/expense_tile.dart';
+import 'package:budget_tracker_app/widgets/income_tile.dart';
+import 'package:budget_tracker_app/widgets/tracker_card.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -191,17 +196,17 @@ class _HomePageState extends State<HomePage> {
                     ),
                     boxShadow: [
                       BoxShadow(
+                        color: purpleAccent.withOpacity(0.4),
+                        blurRadius: 20,
+                        spreadRadius: 0.5,
+                        offset: const Offset(2, 4),
+                      ),
+                      BoxShadow(
                         color: blue.withOpacity(0.4),
                         blurRadius: 20,
                         spreadRadius: 0.5,
                         offset: const Offset(-2, 2),
                       ),
-                      BoxShadow(
-                        color: purpleAccent.withOpacity(0.4),
-                        blurRadius: 20,
-                        spreadRadius: 0.5,
-                        offset: const Offset(2,4),
-                      )
                     ],
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -259,6 +264,56 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 21.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Transactions",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const TransactionDataPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "View All",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    Map dataAtIndex = snapshot.data![index];
+                    if (dataAtIndex['type'] == 'Income') {
+                      return IncomeTile(
+                          value: dataAtIndex["amount"],
+                          note: dataAtIndex["note"]);
+                    } else {
+                      return ExpenseTile(
+                        value: dataAtIndex["amount"],
+                        note: dataAtIndex["note"],
+                      );
+                    }
+                  },
+                )
               ],
             );
           } else {
@@ -268,72 +323,6 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-    );
-  }
-}
-
-class TrackerCard extends StatefulWidget {
-  const TrackerCard({
-    Key? key,
-    required this.value,
-    required this.type,
-    required this.iconData,
-    required this.iconColor,
-  }) : super(key: key);
-
-  final String value;
-  final String type;
-  final IconData iconData;
-  final Color iconColor;
-
-  @override
-  State<TrackerCard> createState() => _TrackerCardState();
-}
-
-class _TrackerCardState extends State<TrackerCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white60.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          padding: const EdgeInsets.all(6.0),
-          child: Icon(
-            widget.iconData,
-            size: 20.0,
-            color: widget.iconColor,
-          ),
-        ),
-        const SizedBox(
-          width: 10.0,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.type,
-              style: TextStyle(
-                color: offWhite.withOpacity(0.8),
-                fontSize: 12.0,
-              ),
-            ),
-            const SizedBox(
-              height: 4.0,
-            ),
-            Text(
-              widget.value,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: offWhite,
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
