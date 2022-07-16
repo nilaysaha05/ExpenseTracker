@@ -175,8 +175,7 @@ class _AddTransactionState extends State<AddTransaction> {
                   width: 12.0,
                 ),
                 ChoiceChip(
-                  padding: const EdgeInsets.only(
-                      left: 18.0, right: 18.0, top: 10.0, bottom: 10.0),
+                  padding: const EdgeInsets.all(10),
                   label: Text(
                     "Income",
                     style: TextStyle(
@@ -199,8 +198,7 @@ class _AddTransactionState extends State<AddTransaction> {
                   width: 15.0,
                 ),
                 ChoiceChip(
-                  padding: const EdgeInsets.only(
-                      left: 18.0, right: 18.0, top: 10.0, bottom: 10.0),
+                  padding: const EdgeInsets.all(10),
                   label: Text(
                     "Expense",
                     style: TextStyle(

@@ -2,6 +2,7 @@ import 'package:budget_tracker_app/controller/db_helper.dart';
 import 'package:budget_tracker_app/theme/colors.dart';
 import 'package:budget_tracker_app/widgets/expense_tile.dart';
 import 'package:budget_tracker_app/widgets/income_tile.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class TransactionDataPage extends StatefulWidget {
@@ -60,10 +61,11 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
               );
             }
             getBalance(snapshot.data!);
-            return Column(
+            return ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 12.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 12.0),
                   child: Row(
                     children: [
                       Container(
@@ -98,6 +100,70 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                       ),
                     ],
                   ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white,
+                  ),
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Total Balance",
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 16,
+                        ),
+                      ),
+                     const  SizedBox(height: 8,),
+                      Text(
+                        "₹ $totalBalance",
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const  SizedBox(height: 5,),
+                      Container(
+                        height: 400,
+                        width: 400,
+                        child: LineChart(
+                          LineChartData(
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: const [
+                                  FlSpot(0, 3),
+                                  FlSpot(2.6, 2),
+                                  FlSpot(4.9, 5),
+                                  FlSpot(6.8, 3.1),
+                                  FlSpot(8, 4),
+                                  FlSpot(9.5, 3),
+                                  FlSpot(11, 4),
+                                ],
+                                isCurved: true,
+                                barWidth: 6,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    blue1,
+                                    blue,
+                                    deepPurple,
+                                    purpleAccent,
+                                    peach,
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10.0,
                 ),
                 ListView.builder(
                   shrinkWrap: true,

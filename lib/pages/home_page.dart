@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:budget_tracker_app/controller/db_helper.dart';
 import 'package:budget_tracker_app/pages/add_transaction.dart';
 import 'package:budget_tracker_app/pages/transaction_data_page.dart';
