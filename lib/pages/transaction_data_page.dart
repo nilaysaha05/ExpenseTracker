@@ -14,9 +14,23 @@ class TransactionDataPage extends StatefulWidget {
 
 class _TransactionDataPageState extends State<TransactionDataPage> {
   DbHelper dbHelper = DbHelper();
+  DateTime today = DateTime.now();
   double totalBalance = 0;
   double totalIncome = 0;
   double totalExpense = 0;
+  List<FlSpot> dataSet = [];
+
+  List<FlSpot> getChartPoints(Map entireData) {
+    dataSet = [];
+    entireData.forEach((key, value) {
+      if (value['type'] == 'Expense' &&
+          (value['date'] as DateTime).month == today.month) {
+        dataSet.add(FlSpot((value['date'] as DateTime).day.toDouble(),
+            (value['amount'] as double)));
+      }
+    });
+    return dataSet;
+  }
 
   getBalance(Map entireData) {
     totalExpense = 0;
@@ -61,6 +75,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
               );
             }
             getBalance(snapshot.data!);
+            getChartPoints(snapshot.data!);
             return ListView(
               children: [
                 Padding(
@@ -68,101 +83,182 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                       horizontal: 20.0, vertical: 12.0),
                   child: Row(
                     children: [
-                      Container(
-                        height: 39.0,
-                        width: 39.0,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(
-                              Icons.arrow_circle_left,
-                              color: Colors.black38,
-                              size: 24.0,
-                            ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          height: 39.0,
+                          width: 39.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color:Colors.grey.withOpacity(0.4),
+                                blurRadius: 6,
+                                spreadRadius: 0.5,
+                                offset: const Offset(0,0),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.arrow_circle_left,
+                            color: Colors.black38,
+                            size: 24.0,
                           ),
                         ),
                       ),
                       const SizedBox(
                         width: 15.0,
                       ),
-                      const Text(
-                        "Transactions",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 23.0,
-                            fontWeight: FontWeight.bold),
-                      ),
                     ],
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 21.0),
+                  child: Text(
+                    "Expense Chart",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 23.0,
+                        fontWeight: FontWeight.bold),
                   ),
-                  margin: const EdgeInsets.all(20),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Total Balance",
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
+                ),
+                dataSet.length > 2
+                    ? Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              blurRadius: 10,
+                              spreadRadius: 0.5,
+                              offset: const Offset(1,1),
+                            ),
+                          ],
                         ),
-                      ),
-                     const  SizedBox(height: 8,),
-                      Text(
-                        "₹ $totalBalance",
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      const  SizedBox(height: 5,),
-                      Container(
-                        height: 400,
-                        width: 400,
-                        child: LineChart(
-                          LineChartData(
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: const [
-                                  FlSpot(0, 3),
-                                  FlSpot(2.6, 2),
-                                  FlSpot(4.9, 5),
-                                  FlSpot(6.8, 3.1),
-                                  FlSpot(8, 4),
-                                  FlSpot(9.5, 3),
-                                  FlSpot(11, 4),
-                                ],
-                                isCurved: true,
-                                barWidth: 6,
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    blue1,
-                                    blue,
-                                    deepPurple,
-                                    purpleAccent,
-                                    peach,
+                        margin: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Total Balance",
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              "₹ $totalBalance",
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Container(
+                              height: 400,
+                              width: 400,
+                              child: LineChart(
+                                LineChartData(
+                                  lineBarsData: [
+                                    LineChartBarData(
+                                      spots: getChartPoints(snapshot.data!),
+                                      isCurved: false,
+                                      barWidth: 6,
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          blue1,
+                                          blue,
+                                          deepPurple,
+                                          purpleAccent,
+                                          peach,
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              blurRadius: 10,
+                              spreadRadius: 0.5,
+                              offset: const Offset(1,1),
+                            ),
+                          ],
+                        ),
+                        margin: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Total Balance",
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              "₹ $totalBalance",
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Container(
+                              height: 100,
+                              width: 400,
+                              child: const Center(
+                                child: Text(
+                                  "Not enough data to show chart !",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                const SizedBox(
+                  height: 10.0,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 21.0),
+                  child: Text(
+                    "Transactions",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 23.0,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10.0,
                 ),
                 ListView.builder(

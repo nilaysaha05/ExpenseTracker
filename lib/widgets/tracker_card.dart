@@ -1,25 +1,18 @@
 import 'package:budget_tracker_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-class TrackerCard extends StatefulWidget {
-  const TrackerCard({
-    Key? key,
-    required this.value,
+
+class TrackerCard extends StatelessWidget {
+  const TrackerCard({Key? key,required this.value,
     required this.type,
     required this.iconData,
-    required this.iconColor,
-  }) : super(key: key);
+    required this.iconColor,}) : super(key: key);
 
   final String value;
   final String type;
   final IconData iconData;
   final Color iconColor;
 
-  @override
-  State<TrackerCard> createState() => _TrackerCardState();
-}
-
-class _TrackerCardState extends State<TrackerCard> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -31,9 +24,9 @@ class _TrackerCardState extends State<TrackerCard> {
           ),
           padding: const EdgeInsets.all(6.0),
           child: Icon(
-            widget.iconData,
+            iconData,
             size: 20.0,
-            color: widget.iconColor,
+            color: iconColor,
           ),
         ),
         const SizedBox(
@@ -43,7 +36,7 @@ class _TrackerCardState extends State<TrackerCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.type,
+              type,
               style: TextStyle(
                 color: offWhite.withOpacity(0.8),
                 fontSize: 12.0,
@@ -53,7 +46,7 @@ class _TrackerCardState extends State<TrackerCard> {
               height: 4.0,
             ),
             Text(
-              widget.value,
+              "₹ $value",
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,

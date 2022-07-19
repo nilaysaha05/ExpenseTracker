@@ -1,5 +1,6 @@
 import 'package:budget_tracker_app/controller/db_helper.dart';
 import 'package:budget_tracker_app/pages/add_transaction.dart';
+import 'package:budget_tracker_app/pages/settings_page.dart';
 import 'package:budget_tracker_app/pages/transaction_data_page.dart';
 import 'package:budget_tracker_app/theme/colors.dart';
 import 'package:budget_tracker_app/widgets/expense_tile.dart';
@@ -53,9 +54,9 @@ class _HomePageState extends State<HomePage> {
           boxShadow: [
             BoxShadow(
               color: purpleAccent.withOpacity(0.4),
-              blurRadius: 20,
-              spreadRadius: 1,
-              offset: const Offset(-1, 10),
+              blurRadius: 10,
+              spreadRadius: 0.8,
+              offset: const Offset(0,0),
             )
           ],
           gradient: const LinearGradient(
@@ -117,12 +118,21 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: const Color(0xfff5c560),
-                            maxRadius: 26.0,
-                            child: Image.asset(
-                              'assets/user.png',
-                              height: 45.0,
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(26.0) ,
+                              boxShadow: [
+                              BoxShadow(
+                                color:Colors.grey.withOpacity(0.4),
+                                blurRadius: 6,
+                                spreadRadius: 0.5,
+                                offset: const Offset(0,0),
+                              ),
+                            ],),
+                            child: const CircleAvatar(
+                              backgroundColor:  Color(0xfff5c560),
+                              maxRadius: 26.0,
+                              backgroundImage: AssetImage("assets/face1.png"),
                             ),
                           ),
                           const SizedBox(
@@ -153,16 +163,33 @@ class _HomePageState extends State<HomePage> {
                           )
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.settings,
-                          size: 25.0,
-                          color: Colors.black45,
+                      InkWell(
+                        onTap: (){
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsPage(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color:Colors.grey.withOpacity(0.4),
+                                blurRadius: 6,
+                                spreadRadius: 0.5,
+                                offset: const Offset(0,0),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.settings,
+                            size: 25.0,
+                            color: Colors.black45,
+                          ),
                         ),
                       ),
                     ],
@@ -178,8 +205,8 @@ class _HomePageState extends State<HomePage> {
                       colors: [
                         blue1,
                         blue,
-                        Colors.deepPurpleAccent,
-                        Colors.purpleAccent,
+                        deepPurple,
+                        purpleAccent,
                         peach,
                       ],
                       stops: [
@@ -195,9 +222,9 @@ class _HomePageState extends State<HomePage> {
                     boxShadow: [
                       BoxShadow(
                         color: purpleAccent.withOpacity(0.4),
-                        blurRadius: 20,
+                        blurRadius: 15,
                         spreadRadius: 0.5,
-                        offset: const Offset(2, 4),
+                        offset: const Offset(1,1),
                       ),
                       BoxShadow(
                         color: blue.withOpacity(0.4),
