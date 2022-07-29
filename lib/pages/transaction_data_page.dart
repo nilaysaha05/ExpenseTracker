@@ -23,8 +23,8 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
   List<FlSpot> getChartPoints(Map entireData) {
     dataSet = [];
     entireData.forEach((key, value) {
-      if (value['type'] == 'Expense' &&
-          (value['date'] as DateTime).month == today.month) {
+      if (value['type'] == 'Expense' && (value['date'] as DateTime).month == today.month)
+      {
         dataSet.add(FlSpot((value['date'] as DateTime).day.toDouble(),
             (value['amount'] as double)));
       }
@@ -169,11 +169,13 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                               width: 400,
                               child: LineChart(
                                 LineChartData(
+                                  minX: 1,
+                                  maxX: 30,
                                   lineBarsData: [
                                     LineChartBarData(
                                       spots: getChartPoints(snapshot.data!),
-                                      isCurved: false,
-                                      barWidth: 6,
+                                      isCurved: true,
+                                      barWidth: 3,
                                       gradient: const LinearGradient(
                                         colors: [
                                           blue1,

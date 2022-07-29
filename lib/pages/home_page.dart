@@ -7,6 +7,7 @@ import 'package:budget_tracker_app/widgets/expense_tile.dart';
 import 'package:budget_tracker_app/widgets/income_tile.dart';
 import 'package:budget_tracker_app/widgets/tracker_card.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,8 +17,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    getPreferences();
+  }
+
+  getPreferences() async {
+    preferences = await SharedPreferences.getInstance();
+  }
+
   DbHelper dbHelper = DbHelper();
   double totalBalance = 0;
+  late SharedPreferences preferences;
   double totalIncome = 0;
   double totalExpense = 0;
 
@@ -56,7 +68,7 @@ class _HomePageState extends State<HomePage> {
               color: purpleAccent.withOpacity(0.4),
               blurRadius: 10,
               spreadRadius: 0.8,
-              offset: const Offset(0,0),
+              offset: const Offset(0, 0),
             )
           ],
           gradient: const LinearGradient(
@@ -120,17 +132,18 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(26.0) ,
+                              borderRadius: BorderRadius.circular(26.0),
                               boxShadow: [
-                              BoxShadow(
-                                color:Colors.grey.withOpacity(0.4),
-                                blurRadius: 6,
-                                spreadRadius: 0.5,
-                                offset: const Offset(0,0),
-                              ),
-                            ],),
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.4),
+                                  blurRadius: 6,
+                                  spreadRadius: 0.5,
+                                  offset: const Offset(0, 0),
+                                ),
+                              ],
+                            ),
                             child: const CircleAvatar(
-                              backgroundColor:  Color(0xfff5c560),
+                              backgroundColor: Color(0xfff5c560),
                               maxRadius: 26.0,
                               backgroundImage: AssetImage("assets/face1.png"),
                             ),
@@ -140,8 +153,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 "Welcome!",
                                 style: TextStyle(
                                   color: Colors.black45,
@@ -149,12 +162,12 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 2.0,
                               ),
                               Text(
-                                'Nilay Saha',
-                                style: TextStyle(
+                                '${preferences.getString("name")}',
+                                style: const TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -164,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const SettingsPage(),
@@ -178,10 +191,10 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color:Colors.grey.withOpacity(0.4),
+                                color: Colors.grey.withOpacity(0.4),
                                 blurRadius: 6,
                                 spreadRadius: 0.5,
-                                offset: const Offset(0,0),
+                                offset: const Offset(0, 0),
                               ),
                             ],
                           ),
@@ -224,7 +237,7 @@ class _HomePageState extends State<HomePage> {
                         color: purpleAccent.withOpacity(0.4),
                         blurRadius: 15,
                         spreadRadius: 0.5,
-                        offset: const Offset(1,1),
+                        offset: const Offset(1, 1),
                       ),
                       BoxShadow(
                         color: blue.withOpacity(0.4),
