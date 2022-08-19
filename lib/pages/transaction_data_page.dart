@@ -321,6 +321,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                         note: dataAtIndex.note,
                         date: dataAtIndex.date,
                         type: dataAtIndex.type,
+                        index: index,
                       );
                     } else {
                       return ExpenseTile(
@@ -328,6 +329,8 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                         note: dataAtIndex.note,
                         date: dataAtIndex.date,
                         type: dataAtIndex.type,
+                        index: index,
+
                       );
                     }
                   },

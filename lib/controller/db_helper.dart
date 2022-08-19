@@ -13,6 +13,12 @@ class DbHelper {
     box = Hive.box("money");
   }
 
+  Future deleteData(int index)
+  async {
+    await box.deleteAt(index);
+
+  }
+
   Future addData(
     double amount,
     DateTime date,

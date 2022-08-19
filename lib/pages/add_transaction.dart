@@ -187,7 +187,7 @@ class _AddTransactionState extends State<AddTransaction> {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color:
-                            type == "Income" ? Colors.black45 : Colors.white),
+                            type == "Income" ? Colors.black54 : Colors.black12),
                   ),
                   selected: type == "Income" ? true : false,
                   onSelected: (val) {
@@ -209,7 +209,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: type == "Expense" ? Colors.black45 : Colors.white),
+                        color: type == "Expense" ? Colors.black54 : Colors.black12),
                   ),
                   selected: type == "Expense" ? true : false,
                   onSelected: (val) {
