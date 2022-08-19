@@ -94,6 +94,7 @@ class _AddTransactionState extends State<AddTransaction> {
               child: TextField(
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
+                maxLength: 10,
                 style: const TextStyle(
                   fontSize: 40,
                   color: Colors.black45,
@@ -123,7 +124,10 @@ class _AddTransactionState extends State<AddTransaction> {
                 onChanged: (val) {
                   try {
                     amount = double.parse(val);
-                  } catch (e) {}
+                  }
+                  catch (e) {
+                    print(e.toString());
+                  }
                 },
               ),
             ),
@@ -131,6 +135,7 @@ class _AddTransactionState extends State<AddTransaction> {
               height: 45.0,
             ),
             TextField(
+              maxLength: 15,
               style: const TextStyle(
                   fontSize: 18,
                   color: Colors.black45,

@@ -1,4 +1,5 @@
 import 'package:budget_tracker_app/controller/db_helper.dart';
+import 'package:budget_tracker_app/models/transaction_models.dart';
 import 'package:budget_tracker_app/pages/add_transaction.dart';
 import 'package:budget_tracker_app/pages/settings_page.dart';
 import 'package:budget_tracker_app/pages/transaction_data_page.dart';
@@ -7,6 +8,7 @@ import 'package:budget_tracker_app/widgets/expense_tile.dart';
 import 'package:budget_tracker_app/widgets/income_tile.dart';
 import 'package:budget_tracker_app/widgets/tracker_card.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,12 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    getPreferences();
-  }
-
   getPreferences() async {
     preferences = await SharedPreferences.getInstance();
   }
@@ -30,22 +26,53 @@ class _HomePageState extends State<HomePage> {
   DbHelper dbHelper = DbHelper();
   double totalBalance = 0;
   late SharedPreferences preferences;
+  late Box box;
   double totalIncome = 0;
   double totalExpense = 0;
 
-  getBalance(Map entireData) {
-    totalExpense = 0;
-    totalIncome = 0;
+  getBalance(List<TransactionModel> entireData) {
     totalBalance = 0;
-    entireData.forEach((key, value) {
-      if (value['type'] == "Income") {
-        totalBalance += (value['amount'] as double);
-        totalIncome += (value['amount'] as double);
-      } else {
-        totalBalance -= (value['amount'] as double);
-        totalExpense += (value['amount'] as double);
+    totalIncome = 0;
+    totalExpense = 0;
+    for (TransactionModel data in entireData) {
+      if (data.date.month == DateTime.now().month) {
+        if (data.type == "Income") {
+          totalBalance += data.amount;
+          totalIncome += data.amount;
+        } else {
+          totalBalance -= data.amount;
+          totalExpense += data.amount;
+        }
       }
-    });
+    }
+  }
+
+  Future<List<TransactionModel>> fetch() async {
+    if (box.values.isEmpty) {
+      return Future.value([]);
+    } else {
+      List<TransactionModel> items = [];
+      box.toMap().values.forEach((element) {
+        //print(element);
+        items.add(
+          TransactionModel(
+            element['amount'] as double,
+            element['date'] as DateTime,
+            element['type'],
+            element['note'],
+          ),
+        );
+      });
+      return items;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPreferences();
+    box = Hive.box('money');
+    fetch();
   }
 
   @override
@@ -101,8 +128,8 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-      body: FutureBuilder<Map>(
-        future: dbHelper.fetch(),
+      body: FutureBuilder<List<TransactionModel>>(
+        future: fetch(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(
@@ -119,7 +146,7 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            getBalance(snapshot.data!);
+           getBalance(snapshot.data!);
             return ListView(
               children: [
                 Padding(
@@ -143,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                             child: const CircleAvatar(
-                              backgroundColor: Color(0xfff5c560),
+                              backgroundColor: Colors.grey,
                               maxRadius: 26.0,
                               backgroundImage: AssetImage("assets/face1.png"),
                             ),
@@ -304,7 +331,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 21.0),
+                      vertical: 20.0, horizontal: 20.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -339,15 +366,20 @@ class _HomePageState extends State<HomePage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    Map dataAtIndex = snapshot.data![index];
-                    if (dataAtIndex['type'] == 'Income') {
+                    TransactionModel dataAtIndex =snapshot.data![index];
+                    if (dataAtIndex.type == "Income") {
                       return IncomeTile(
-                          value: dataAtIndex["amount"],
-                          note: dataAtIndex["note"]);
+                          value: dataAtIndex.amount,
+                          note: dataAtIndex.note,
+                        type: dataAtIndex.type,
+                        date: dataAtIndex.date,
+                      );
                     } else {
                       return ExpenseTile(
-                        value: dataAtIndex["amount"],
-                        note: dataAtIndex["note"],
+                        value: dataAtIndex.amount,
+                        note: dataAtIndex.note,
+                        type: dataAtIndex.type,
+                        date: dataAtIndex.date,
                       );
                     }
                   },

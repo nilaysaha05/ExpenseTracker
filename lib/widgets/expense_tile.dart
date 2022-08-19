@@ -6,10 +6,17 @@ class ExpenseTile extends StatelessWidget {
     Key? key,
     required this.value,
     required this.note,
+    required this.date,
+    required this.type,
   }) : super(key: key);
+
+
 
   final double value;
   final String note;
+  final String type;
+  final DateTime date;
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,39 +37,70 @@ class ExpenseTile extends StatelessWidget {
             color: grey.withOpacity(0.4),
             blurRadius: 6,
             spreadRadius: 0.8,
-            offset: const Offset(1,1),
+            offset: const Offset(1, 1),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.arrow_circle_up_outlined,
-                color: Colors.redAccent[700],
-                size: 30.0,
+              Row(
+                children: [
+                  Icon(
+                    Icons.arrow_circle_up_outlined,
+                    color: Colors.redAccent[700],
+                    size: 30.0,
+                  ),
+                  const SizedBox(
+                    width: 4.0,
+                  ),
+                  Text(
+                    type,
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(
-                width: 4.0,
-              ),
-              Text(
-                note,
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.only(top: 5.0,left: 5.0),
+                child: Text(
+                  "${date.day}-${date.month}",
+                  style:  TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ],
           ),
-          Text(
-            "-₹$value",
-            style:  TextStyle(
-                color: Colors.redAccent[700],
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "-₹$value",
+                style: TextStyle(
+                    color: Colors.redAccent[700],
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: Text(
+                  note,
+                  style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
         ],
       ),

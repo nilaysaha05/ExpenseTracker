@@ -89,6 +89,7 @@ class _AddNameState extends State<AddName> {
               height: 15.0,
             ),
             TextField(
+              maxLength: 12,
               style: const TextStyle(
                 color: Colors.black45,
                 height: 2,

@@ -27,16 +27,6 @@ class DbHelper {
     };
     box.add(value);
   }
-  Future<Map> fetch()
-  {
-    if(box.values.isEmpty)
-      {
-        return Future.value({});
-      }
-    else{
-      return Future.value(box.toMap());
-    }
-  }
   addName(String name)
   async {
     preferences = await SharedPreferences.getInstance();

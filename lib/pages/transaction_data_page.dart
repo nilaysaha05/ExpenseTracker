@@ -1,9 +1,11 @@
 import 'package:budget_tracker_app/controller/db_helper.dart';
+import 'package:budget_tracker_app/models/transaction_models.dart';
 import 'package:budget_tracker_app/theme/colors.dart';
 import 'package:budget_tracker_app/widgets/expense_tile.dart';
 import 'package:budget_tracker_app/widgets/income_tile.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class TransactionDataPage extends StatefulWidget {
   const TransactionDataPage({Key? key}) : super(key: key);
@@ -13,38 +15,81 @@ class TransactionDataPage extends StatefulWidget {
 }
 
 class _TransactionDataPageState extends State<TransactionDataPage> {
+  //
   DbHelper dbHelper = DbHelper();
-  DateTime today = DateTime.now();
   double totalBalance = 0;
+  late Box box;
   double totalIncome = 0;
   double totalExpense = 0;
+  DateTime today = DateTime.now();
   List<FlSpot> dataSet = [];
 
-  List<FlSpot> getChartPoints(Map entireData) {
-    dataSet = [];
-    entireData.forEach((key, value) {
-      if (value['type'] == 'Expense' && (value['date'] as DateTime).month == today.month)
-      {
-        dataSet.add(FlSpot((value['date'] as DateTime).day.toDouble(),
-            (value['amount'] as double)));
+  getBalance(List<TransactionModel> entireData) {
+    totalBalance = 0;
+    totalIncome = 0;
+    totalExpense = 0;
+    for (TransactionModel data in entireData) {
+      if (data.date.month == DateTime.now().month) {
+        if (data.type == "Income") {
+          totalBalance += data.amount;
+          totalIncome += data.amount;
+        } else {
+          totalBalance -= data.amount;
+          totalExpense += data.amount;
+        }
       }
-    });
+    }
+  }
+
+  Future<List<TransactionModel>> fetch() async {
+    if (box.values.isEmpty) {
+      return Future.value([]);
+    } else {
+      List<TransactionModel> items = [];
+      box.toMap().values.forEach((element) {
+        //print(element);
+        items.add(
+          TransactionModel(
+            element['amount'] as double,
+            element['date'] as DateTime,
+            element['type'],
+            element['note'],
+          ),
+        );
+      });
+      return items;
+    }
+  }
+
+  List<FlSpot> getChartPoints(List<TransactionModel> entireData) {
+    dataSet = [];
+    List tempDataSet = [];
+
+    for (TransactionModel item in entireData) {
+      if (item.date.month == today.month && item.type == "Expense") {
+        tempDataSet.add(item);
+      }
+    }
+    //
+    // Sorting the list as per the date
+    tempDataSet.sort((a, b) => a.date.day.compareTo(b.date.day));
+    //
+    for (var i = 0; i < tempDataSet.length; i++) {
+      dataSet.add(
+        FlSpot(
+          tempDataSet[i].date.day.toDouble(),
+          tempDataSet[i].amount.toDouble(),
+        ),
+      );
+    }
     return dataSet;
   }
 
-  getBalance(Map entireData) {
-    totalExpense = 0;
-    totalIncome = 0;
-    totalBalance = 0;
-    entireData.forEach((key, value) {
-      if (value['type'] == "Income") {
-        totalBalance += (value['amount'] as double);
-        totalIncome += (value['amount'] as double);
-      } else {
-        totalBalance -= (value['amount'] as double);
-        totalExpense += (value['amount'] as double);
-      }
-    });
+  @override
+  void initState() {
+    super.initState();
+    box = Hive.box('money');
+    fetch();
   }
 
   @override
@@ -57,8 +102,8 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
         toolbarHeight: 20.0,
         elevation: 0.0,
       ),
-      body: FutureBuilder<Map>(
-        future: dbHelper.fetch(),
+      body: FutureBuilder<List<TransactionModel>>(
+        future: fetch(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(
@@ -95,10 +140,10 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color:Colors.grey.withOpacity(0.4),
+                                color: Colors.grey.withOpacity(0.4),
                                 blurRadius: 6,
                                 spreadRadius: 0.5,
-                                offset: const Offset(0,0),
+                                offset: const Offset(0, 0),
                               ),
                             ],
                           ),
@@ -135,7 +180,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                               color: Colors.grey.withOpacity(0.4),
                               blurRadius: 10,
                               spreadRadius: 0.5,
-                              offset: const Offset(1,1),
+                              offset: const Offset(1, 1),
                             ),
                           ],
                         ),
@@ -164,18 +209,18 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                             const SizedBox(
                               height: 5,
                             ),
-                            Container(
+                            SizedBox(
                               height: 400,
                               width: 400,
                               child: LineChart(
                                 LineChartData(
-                                  minX: 1,
-                                  maxX: 30,
                                   lineBarsData: [
                                     LineChartBarData(
                                       spots: getChartPoints(snapshot.data!),
                                       isCurved: true,
                                       barWidth: 3,
+                                      showingIndicators: [200,200,90,10],
+                                      dotData: FlDotData(show: true),
                                       gradient: const LinearGradient(
                                         colors: [
                                           blue1,
@@ -184,6 +229,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                                           purpleAccent,
                                           peach,
                                         ],
+
                                       ),
                                     ),
                                   ],
@@ -202,7 +248,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                               color: Colors.grey.withOpacity(0.4),
                               blurRadius: 10,
                               spreadRadius: 0.5,
-                              offset: const Offset(1,1),
+                              offset: const Offset(1, 1),
                             ),
                           ],
                         ),
@@ -231,10 +277,10 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                             const SizedBox(
                               height: 5,
                             ),
-                            Container(
+                            const SizedBox(
                               height: 100,
                               width: 400,
-                              child: const Center(
+                              child: Center(
                                 child: Text(
                                   "Not enough data to show chart !",
                                   style: TextStyle(
@@ -268,15 +314,20 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    Map dataAtIndex = snapshot.data![index];
-                    if (dataAtIndex['type'] == 'Income') {
+                    TransactionModel dataAtIndex = snapshot.data![index];
+                    if (dataAtIndex.type == 'Income') {
                       return IncomeTile(
-                          value: dataAtIndex["amount"],
-                          note: dataAtIndex["note"]);
+                        value: dataAtIndex.amount,
+                        note: dataAtIndex.note,
+                        date: dataAtIndex.date,
+                        type: dataAtIndex.type,
+                      );
                     } else {
                       return ExpenseTile(
-                        value: dataAtIndex["amount"],
-                        note: dataAtIndex["note"],
+                        value: dataAtIndex.amount,
+                        note: dataAtIndex.note,
+                        date: dataAtIndex.date,
+                        type: dataAtIndex.type,
                       );
                     }
                   },
