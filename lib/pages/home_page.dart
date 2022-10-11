@@ -139,8 +139,7 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(
                 builder: (context) => const AddTransaction(),
               ),
-            )
-                .whenComplete(() {
+            ).whenComplete(() {
               setState(() {});
             });
           },

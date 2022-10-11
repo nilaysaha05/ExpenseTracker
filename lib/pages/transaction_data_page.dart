@@ -1,8 +1,8 @@
 import 'package:budget_tracker_app/controller/db_helper.dart';
 import 'package:budget_tracker_app/models/transaction_models.dart';
 import 'package:budget_tracker_app/theme/colors.dart';
-import 'package:budget_tracker_app/widgets/expense_tile.dart';
-import 'package:budget_tracker_app/widgets/income_tile.dart';
+import 'package:budget_tracker_app/widgets/confirm_dialog.dart';
+import 'package:budget_tracker_app/widgets/info_snackbar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -23,6 +23,20 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
   double totalExpense = 0;
   DateTime today = DateTime.now();
   List<FlSpot> dataSet = [];
+  List<String> months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   getBalance(List<TransactionModel> entireData) {
     totalBalance = 0;
@@ -314,23 +328,22 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    TransactionModel dataAtIndex = snapshot.data![index];
-                    if (dataAtIndex.type == 'Income') {
-                      return IncomeTile(
-                        value: dataAtIndex.amount,
-                        note: dataAtIndex.note,
-                        date: dataAtIndex.date,
-                        type: dataAtIndex.type,
-                        index: index,
+                    TransactionModel dataAtIndex =snapshot.data![index];
+                    if (dataAtIndex.type == "Income") {
+                      return incomeTile(
+                        dataAtIndex.amount,
+                        dataAtIndex.note,
+                        dataAtIndex.type,
+                        dataAtIndex.date,
+                        index,
                       );
                     } else {
-                      return ExpenseTile(
-                        value: dataAtIndex.amount,
-                        note: dataAtIndex.note,
-                        date: dataAtIndex.date,
-                        type: dataAtIndex.type,
-                        index: index,
-
+                      return expenseTile(
+                        dataAtIndex.amount,
+                        dataAtIndex.note,
+                        dataAtIndex.type,
+                        dataAtIndex.date,
+                        index,
                       );
                     }
                   },
@@ -346,4 +359,213 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
       ),
     );
   }
+  //incomeTile
+  Widget incomeTile(double value, String note,String type, DateTime date, int index)
+  {
+    return InkWell(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          deleteInfoSnackBar,
+        );
+      },
+      onLongPress:() async{
+        bool? answer = await showConfirmDialog(
+            context, "WARNING", "Do you want to delete this?");
+
+        if(answer !=null && answer == true)
+        {
+          await dbHelper.deleteData(index);
+          setState((){});
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 22.0,
+          vertical: 8.0,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 25.0,
+          horizontal: 20.0,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.0),
+          boxShadow: [
+            BoxShadow(
+              color: grey.withOpacity(0.4),
+              blurRadius: 6,
+              spreadRadius: 0.8,
+              offset: const Offset(1, 1),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.arrow_circle_down_outlined,
+                      color: Colors.greenAccent[700],
+                      size: 30.0,
+                    ),
+                    const SizedBox(
+                      width: 4.0,
+                    ),
+                    Text(
+                      type,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0,left: 5),
+                  child: Text(
+                    "${date.day} ${months[date.month-1]}",
+                    style:  TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "+₹$value",
+                  style: TextStyle(
+                      color: Colors.greenAccent[700],
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    note,
+                    style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //ExpenseTile
+  Widget expenseTile(double value, String note,String type, DateTime date, int index)
+  {
+    return InkWell(
+      onLongPress: () async{
+        bool? answer = await showConfirmDialog(
+            context, "WARNING", "Do you want to delete this?");
+
+        if(answer !=null && answer == true)
+        {
+          await dbHelper.deleteData(index);
+          setState((){});
+        }
+
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 22.0,
+          vertical: 8.0,
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 25.0,
+          horizontal: 20.0,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.0),
+          boxShadow: [
+            BoxShadow(
+              color: grey.withOpacity(0.4),
+              blurRadius: 6,
+              spreadRadius: 0.8,
+              offset: const Offset(1, 1),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.arrow_circle_up_outlined,
+                      color: Colors.redAccent[700],
+                      size: 30.0,
+                    ),
+                    const SizedBox(
+                      width: 4.0,
+                    ),
+                    Text(
+                      type,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0, left: 5.0),
+                  child: Text(
+                    "${date.day} ${months[date.month - 1]}",
+                    style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "-₹$value",
+                  style: TextStyle(
+                      color: Colors.redAccent[700],
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    note,
+                    style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
