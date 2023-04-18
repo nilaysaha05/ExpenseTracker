@@ -1,8 +1,26 @@
-# budget_tracker_app
+# Expense Tracker
 
-A new Flutter project.
+A daily Expense Tracking app made using Flutter.
 
-## Getting Started
+## Description
+A daily Expense tracker app where you can add all your expenses and track your expense. Also graphical representation of expense is there.
+
+<p align="center">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/1.jpg?raw=true">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/2.jpg?raw=true">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/3.jpg?raw=true">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/4.jpg?raw=true">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/5.png?raw=true">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/6.jpg?raw=true">
+<img src="https://github.com/nilaysaha05/flutter_expense_tracker/blob/master/screenShots/7.jpg?raw=true">
+</p>
+
+## Tech Stack
+- Flutter
+- Hive (local Database)
+
+
+### Getting Started
 
 This project is a starting point for a Flutter application.
 
