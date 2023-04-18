@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   double totalExpense = 0;
   DateTime today = DateTime.now();
   DateTime now = DateTime.now();
-  int index =1;
+  int index = 1;
 
   List<String> months = [
     "Jan",
@@ -53,7 +53,9 @@ class _HomePageState extends State<HomePage> {
     totalIncome = 0;
     totalExpense = 0;
     for (TransactionModel data in entireData) {
-      if (data.date.month == DateTime.now().month) {
+      if (data.date.month == DateTime
+          .now()
+          .month) {
         if (data.type == "Income") {
           totalBalance += data.amount;
           totalIncome += data.amount;
@@ -70,7 +72,10 @@ class _HomePageState extends State<HomePage> {
       return Future.value([]);
     } else {
       List<TransactionModel> items = [];
-      box.toMap().values.forEach((element) {
+      box
+          .toMap()
+          .values
+          .forEach((element) {
         //print(element);
         items.add(
           TransactionModel(
@@ -163,7 +168,7 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-           getBalance(snapshot.data!);
+            getBalance(snapshot.data!);
             return ListView(
               children: [
                 Padding(
@@ -245,9 +250,11 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                selectMonth(),
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width * 0.9,
                   margin: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 12.0),
                   decoration: BoxDecoration(
@@ -377,22 +384,22 @@ class _HomePageState extends State<HomePage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    TransactionModel dataAtIndex =snapshot.data![index];
+                    TransactionModel dataAtIndex = snapshot.data![index];
                     if (dataAtIndex.type == "Income") {
                       return incomeTile(
-                           dataAtIndex.amount,
-                           dataAtIndex.note,
-                         dataAtIndex.type,
-                         dataAtIndex.date,
-                         index,
+                        dataAtIndex.amount,
+                        dataAtIndex.note,
+                        dataAtIndex.type,
+                        dataAtIndex.date,
+                        index,
                       );
                     } else {
                       return expenseTile(
-                         dataAtIndex.amount,
-                         dataAtIndex.note,
-                         dataAtIndex.type,
-                         dataAtIndex.date,
-                         index,
+                        dataAtIndex.amount,
+                        dataAtIndex.note,
+                        dataAtIndex.type,
+                        dataAtIndex.date,
+                        index,
                       );
                     }
                   },
@@ -408,23 +415,23 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   //incomeTile
-  Widget incomeTile(double value, String note,String type, DateTime date, int index)
-  {
+  Widget incomeTile(double value, String note, String type, DateTime date,
+      int index) {
     return InkWell(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           deleteInfoSnackBar,
         );
       },
-      onLongPress:() async{
+      onLongPress: () async {
         bool? answer = await showConfirmDialog(
             context, "WARNING", "Do you want to delete this?");
 
-        if(answer !=null && answer == true)
-        {
+        if (answer != null && answer == true) {
           await dbHelper.deleteData(index);
-          setState((){});
+          setState(() {});
         }
       },
       child: Container(
@@ -475,10 +482,10 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 5.0,left: 5),
+                  padding: const EdgeInsets.only(top: 5.0, left: 5),
                   child: Text(
-                    "${date.day} ${months[date.month-1]}",
-                    style:  TextStyle(
+                    "${date.day} ${months[date.month - 1]}",
+                    style: TextStyle(
                         color: Colors.grey[500],
                         fontSize: 15.0,
                         fontWeight: FontWeight.bold),
@@ -516,19 +523,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   //ExpenseTile
-  Widget expenseTile(double value, String note,String type, DateTime date, int index)
-  {
+  Widget expenseTile(double value, String note, String type, DateTime date,
+      int index) {
     return InkWell(
-      onLongPress: () async{
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          deleteInfoSnackBar,
+        );
+      },
+      onLongPress: () async {
         bool? answer = await showConfirmDialog(
             context, "WARNING", "Do you want to delete this?");
 
-        if(answer !=null && answer == true)
-        {
+        if (answer != null && answer == true) {
           await dbHelper.deleteData(index);
-          setState((){});
+          setState(() {});
         }
-
       },
       child: Container(
         margin: const EdgeInsets.symmetric(
@@ -617,103 +627,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // select month
-  Widget selectMonth() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 3;
-                today = DateTime(now.year, now.month - 2, today.day);
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.25,
-              decoration: BoxDecoration(
-                boxShadow: boxShadow1,
-                borderRadius: BorderRadius.circular(
-                  15.0,
-                ),
-                color: index == 3 ? Colors.white : Colors.grey,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                months[now.month - 3],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 3 ? Colors.black54 : Colors.black38,
-                ),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 2;
-                today = DateTime(now.year, now.month - 1, today.day);
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.25,
-              decoration: BoxDecoration(
-                boxShadow: boxShadow1,
-                borderRadius: BorderRadius.circular(
-                  15.0,
-                ),
-                color: index == 2 ? Colors.white : Colors.grey,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                months[now.month - 2],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 2 ? Colors.black54 : Colors.black38,
-                ),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 1;
-                today = DateTime.now();
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.25,
-              decoration: BoxDecoration(
-                boxShadow: boxShadow1,
-                borderRadius: BorderRadius.circular(
-                  15.0,
-                ),
-                color: index == 1 ? Colors.white : Colors.grey,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                months[now.month - 1],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 1 ? Colors.black54 : Colors.black38,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
-
 
 
 
